@@ -32,28 +32,21 @@ set :linked_files, %w{config/application.yml config/database.yml config/master.k
 
 ## 프로젝트 배포 후 유지에 있어 공통으로 쓰이는 폴더들
 # Capistrano에 배포된 프로젝트는 현재 상용서비스로 사용되는 프로젝트와 과거에 배포되었던 프로젝트 총 :keep_releases개 로 나뉘어 관리가 이루어진다.
-set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache')
+set :linked_dirs, fetch(:linked_dirs, []).push( "log", "tmp/pids", "tmp/cache", "tmp/sockets", "vendor/bundle", "public/system", "public/uploads")
 
 # Capistrano를 통해 배포된 현재/과거에 배포됐던 프로젝트 최대 수용갯수 (Default : 5)
 set :keep_releases, 5
+
+set :passenger_restart_with_touch, true
 
 ## [Rails Version 6.0 ~] linked_files 파일을 EC2 서버로 Upload
 namespace :deploy do
   namespace :check do
     before :linked_files, :set_master_key do
       on roles(:app), in: :sequence, wait: 10 do
-        unless test("[ -f #{shared_path}/config/application.yml ]")
-          upload! 'config/application.yml', "#{shared_path}/config/application.yml"
-        end
-        
         unless test("[ -f #{shared_path}/config/master.key ]")
           upload! 'config/master.key', "#{shared_path}/config/master.key"
         end
-        
-        unless test("[ -f #{shared_path}/config/database.yml ]")
-          upload! 'config/database.yml', "#{shared_path}/config/database.yml"
-        end
-        
       end
     end
   end
