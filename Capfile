@@ -33,6 +33,8 @@ require "capistrano/bundler"
 
 ## Capistrano ↔ migrations
 ## * rails/migrations require가 없으면 배포 후 자동으로 DB Migrate가 안된다.
+require 'capistrano/postgresql'
+
 require "capistrano/rails/migrations"
 
 ## Capistrano ↔ Bundler
